@@ -8,7 +8,17 @@
 import SwiftUI
 import CoreData
 
+
+
 struct ContentView: View {
+    
+    private let itemFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium      // e.g., Aug 4, 2025
+        formatter.timeStyle = .short       // e.g., 11:45 AM
+        return formatter
+    }()
+    
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
@@ -20,10 +30,12 @@ struct ContentView: View {
         NavigationView {
             List {
                 ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+                    if let timestamp = item.timestamp {
+                        NavigationLink {
+                            Text("Item at \(timestamp, formatter: itemFormatter)")
+                        } label: {
+                            Text(timestamp, formatter: itemFormatter)
+                        }
                     }
                 }
                 .onDelete(perform: deleteItems)
