@@ -11,26 +11,72 @@ import CoreData
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Pokemon.id, ascending: true)],
-        animation: .default)
-    private var pokedex: FetchedResults<Pokemon>
+    @FetchRequest<Pokemon>(
+        sortDescriptors: [SortDescriptor(\.id)],
+        animation: .default) private var pokedex
+    
+    @State private var searchText = ""
     
     let fetcher = FetchService()
     
-    
-
+    private var dynamicPredicate : NSPredicate{
+        var predicates : [NSPredicate] = []
+        
+        //Search Predicate
+        if !searchText.isEmpty{
+            predicates.append(NSPredicate(format: "name contains[c] %@",searchText))
+        }
+        
+        //Filter  by favoirite predicate
+        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+    }
     var body: some View {
-        NavigationView {
+        
+        NavigationStack {
             List {
                 ForEach(pokedex) { pokemon in
-                    NavigationLink {
-                        Text(pokemon.name?.capitalized ?? "no name")
-                    } label: {
-                        Text(pokemon.name ?? "no name")
+                    NavigationLink(value: pokemon) {
+                        AsyncImage(url: pokemon.sprite) { image in
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        } placeholder: {
+                            ProgressView()
+                        }
+                        .frame(width:100, height:100)
+                        
+                        VStack(alignment: .leading) {
+                            Text(pokemon.name!.capitalized)
+                                .fontWeight(.bold)
+                            
+                            HStack{
+                                ForEach(pokemon.types!, id:\.self){ type in
+                                    Text(type.capitalized)
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.black)
+                                        .padding(.horizontal, 13)
+                                        .padding(.vertical,5)
+                                        .background(Color(type.description.capitalized))
+                                        .clipShape(.capsule)
+                                }
+                            }
+                        }
                     }
                 }
             }
+            
+            .navigationTitle("Pokedox")
+            .searchable(text: $searchText, prompt: "Find a pokemon")
+            .autocorrectionDisabled()
+            .onChange(of: searchText) {
+                pokedex.nsPredicate = dynamicPredicate
+            }
+            
+            .navigationDestination(for: Pokemon.self, destination: { pokemon in
+                Text(pokemon.name?.capitalized ?? "no name")
+            })
+                                   
             .toolbar {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -44,14 +90,14 @@ struct ContentView: View {
                 }
                 
             }
-            Text("Select an item")
+            
         }
     }
     
     private func getPokemon(){
         
         Task{
-            for id in 1..<152{
+            for id in 0..<152{
                 do{
                     let fetchPokemon = try await fetcher.fetchPokemon(id)
                     
