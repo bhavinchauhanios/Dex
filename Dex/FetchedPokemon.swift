@@ -15,7 +15,7 @@ struct FetchedPokemon: Decodable{
     let hp : Int16
     let attack: Int16
     let defense : Int16
-    let specialDefence: Int16
+    let specialDefense: Int16
     let specialAttack: Int16
     let speed : Int16
     let sprite: URL
@@ -39,7 +39,7 @@ struct FetchedPokemon: Decodable{
         }
         
         enum statDictionaryKeys : CodingKey{
-            case baseState
+            case baseStat
         }
         
         enum SpriteKeys: String, CodingKey{
@@ -61,7 +61,7 @@ struct FetchedPokemon: Decodable{
         while !typesContainer.isAtEnd {
             let typesDictionaryContainer = try typesContainer.nestedContainer(keyedBy: CodingKeys.TypeDictionaryKeys.self)
             let typeContainer = try typesDictionaryContainer.nestedContainer(keyedBy: CodingKeys.TypeDictionaryKeys.TypeKeys.self, forKey: .type)
-            let type = try container.decode(String.self, forKey: .name)
+            let type = try typeContainer.decode(String.self, forKey: .name)
             decodedTypes.append(type)
         }
         
@@ -69,16 +69,16 @@ struct FetchedPokemon: Decodable{
         
         var decodedStats: [Int16] = []
         var statsContainer = try container.nestedUnkeyedContainer(forKey: .stats)
-        while !typesContainer.isAtEnd {
-            let statsDictionaryContainer = try typesContainer.nestedContainer(keyedBy: CodingKeys.statDictionaryKeys.self)
-            let stat = try statsDictionaryContainer.decode(Int16.self, forKey: .baseState)
+        while !statsContainer.isAtEnd {
+            let statsDictionaryContainer = try statsContainer.nestedContainer(keyedBy: CodingKeys.statDictionaryKeys.self)
+            let stat = try statsDictionaryContainer.decode(Int16.self, forKey: .baseStat)
             decodedStats.append(stat)
         }
         
         hp = decodedStats[0]
         attack = decodedStats[1]
         defense = decodedStats[2]
-        specialDefence = decodedStats[4]
+        specialDefense = decodedStats[4]
         specialAttack = decodedStats[3]
         speed = decodedStats[5]
         

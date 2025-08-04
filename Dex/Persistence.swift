@@ -22,12 +22,12 @@ struct PersistenceController {
         newPokemon.types = ["grass"]
         newPokemon.hp = 45
         newPokemon.attack = 49
-        newPokemon.defence = 49
+        newPokemon.defense = 49
         newPokemon.specialAttack = 65
-        newPokemon.specialDefence = 65
+        newPokemon.specialDefense = 65
         newPokemon.speed = 45
-        newPokemon.sprite = URL(string: "")
-        newPokemon.shiny = URL(string: "")
+        newPokemon.sprite = URL(string: "https://example.com/sprite.png")
+        newPokemon.shiny = URL(string: "https://example.com/sprite.png")
         
         do {
             try viewContext.save()
