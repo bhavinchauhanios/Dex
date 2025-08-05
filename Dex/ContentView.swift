@@ -176,17 +176,36 @@ struct ContentView: View {
                     pokemon.specialDefense = fetchPokemon.specialDefense
                     pokemon.speed = fetchPokemon.speed
                     pokemon.sprite = fetchPokemon.sprite
-                    pokemon.shiny = fetchPokemon.shiny
+                    pokemon.shinyURL = fetchPokemon.shiny
                     pokemon.types = fetchPokemon.types
-
+                    print("Fetched pokemon\(i): \(pokemon.name ?? "")")
                     try viewContext.save()
 
                 }catch{
                     print(error)
                 }
             }
+            storeSprites()
         }
         
+    }
+    
+    private func storeSprites(){
+        
+        for pokemon in all{
+            Task{
+                do{
+                    pokemon.spriteImage = try await URLSession.shared.data(from: pokemon.sprite!).0
+                    pokemon.shinyImage = try await URLSession.shared.data(from: pokemon.shinyURL!).0
+                    
+                    try viewContext.save()
+                    
+                    print("Sprites stored: \(pokemon.id): \(pokemon.name?.capitalized ?? "")")
+                }catch{
+                    print(error)
+                }
+            }
+        }
     }
 
 }
