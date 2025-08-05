@@ -12,9 +12,7 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest<Pokemon>(sortDescriptors: []) private var all
 
-    @FetchRequest<Pokemon>(
-        sortDescriptors: [SortDescriptor(\.id)],
-        animation: .default) private var pokedex
+    @FetchRequest<Pokemon>(sortDescriptors: [SortDescriptor(\.id)],animation: .default) private var pokedex
     
     @State private var searchText = ""
     @State private var filterByFavourites = false
@@ -141,7 +139,8 @@ struct ContentView: View {
                 }
                 
                 .navigationDestination(for: Pokemon.self, destination: { pokemon in
-                    Text(pokemon.name?.capitalized ?? "no name")
+                                    PokemonDetail()
+                                    .environmentObject(pokemon)
                 })
                 
                 .toolbar {

@@ -11,7 +11,19 @@ struct PersistenceController {
     //The thing that contols our database
     static let shared = PersistenceController()
 
-    @MainActor
+    static var previewPokemon: Pokemon{
+        
+        let context = PersistenceController.preview.container.viewContext
+        
+        let fetchReqest: NSFetchRequest<Pokemon> = Pokemon.fetchRequest()
+        fetchReqest.fetchLimit = 1
+        
+        let results = try! context.fetch(fetchReqest)
+        
+        return results.first!
+        
+    }
+    
     static let preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
