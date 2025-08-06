@@ -16,7 +16,7 @@ struct FetchService{
     private let baseURL =  URL(string: "https://pokeapi.co/api/v2/pokemon")!
     
     //https://breaking-bad-api-six.vercel.app/api/quotes/random?production=Breaking+Bad
-    func fetchPokemon(_ id:Int) async throws -> FetchedPokemon {
+    func fetchPokemon(_ id:Int) async throws -> Pokemon {
         
         //BuildFetch URL
         let fetchURL = baseURL.appending(path: String(id))
@@ -33,13 +33,14 @@ struct FetchService{
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let pokemon = try decoder.decode(FetchedPokemon.self, from: data)
+        let pokemon = try decoder.decode(Pokemon.self, from: data)
         
         print("Fetched Pokemon: \(pokemon.id): \(pokemon.name.capitalized)")
         // Return Quote
         return pokemon
         
     }
+    
     
     
 }
