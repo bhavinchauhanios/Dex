@@ -54,17 +54,30 @@ struct PersistenceController {
     //
     let container: NSPersistentContainer
 
-    // regular Init function
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "Dex")
+        
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+        } else {
+            // DEV ONLY: remove store if migration fails
+            let storeURL = NSPersistentContainer
+                .defaultDirectoryURL()
+                .appendingPathComponent("Dex.sqlite")
+            try? FileManager.default.removeItem(at: storeURL)
         }
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+
+        // Enable lightweight migration
+        let description = container.persistentStoreDescriptions.first
+        description?.shouldMigrateStoreAutomatically = true
+        description?.shouldInferMappingModelAutomatically = true
+
+        container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
-        })
+        }
+
         container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         container.viewContext.automaticallyMergesChangesFromParent = true
     }

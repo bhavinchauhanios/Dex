@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct PokemonDetail: View {
     
@@ -23,17 +24,18 @@ struct PokemonDetail: View {
                     .scaledToFit()
                     .shadow(color: .black,radius: 6)
                    
-                AsyncImage(url: showShiny ? pokemon.shinyURL : pokemon.sprite) { image in
-                    image
-                        .interpolation(.none)
-                        .resizable()
-                        .scaledToFit()
-                        .padding(.top, 50)
-                        .shadow(color: .black, radius: 6)
-                    
-                } placeholder: {
-                    ProgressView()
-                }
+                KFImage(showShiny ? pokemon.shinyURL : pokemon.sprite)
+                    .placeholder {
+                        ProgressView()
+                    }
+                    .retry(maxCount: 3, interval: .seconds(3))
+                    .cacheOriginalImage()
+                    .fade(duration: 0.25)
+                    .resizable()
+                    .interpolation(.none)
+                    .scaledToFit()
+                    .padding(.top, 50)
+                    .shadow(color: .black, radius: 6)
                 
             }
             

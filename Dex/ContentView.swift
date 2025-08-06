@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreData
+import Kingfisher
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -54,14 +55,17 @@ struct ContentView: View {
                         ForEach(pokedex) { pokemon in
                             NavigationLink(value: pokemon) {
                                 HStack(spacing: 16) {
-                                    AsyncImage(url: pokemon.sprite) { image in
-                                        image
-                                            .resizable()
-                                            .scaledToFit()
-                                    } placeholder: {
-                                        ProgressView()
-                                    }
-                                    .frame(width: 100, height: 100)
+                                    
+                                    KFImage(pokemon.sprite)
+                                        .placeholder {
+                                            ProgressView()
+                                        }
+                                        .retry(maxCount: 3, interval: .seconds(3)) // Optional: retry failed loads
+                                        .cacheOriginalImage()
+                                        .fade(duration: 0.25)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 100)
 
                                     VStack(alignment: .leading, spacing: 4) {
                                         HStack {
