@@ -51,11 +51,77 @@ struct SimpleEntry: TimelineEntry {
 
 struct DexWidgetEntryView : View {
     var entry: Provider.Entry
-
-    var body: some View {
-        VStack {
-            entry.sprite
+    @Environment(\.widgetFamily) var widgetSize
+    var pokemonImage : some View{
+        entry.sprite
+        .interpolation(.none)
+        .resizable()
+        .scaledToFit()
+        .shadow(color: .black, radius: 6)
+    }
+    
+    var typeView : some View{
+        ForEach(entry.types, id: \.self) { type in
+            Text(type.capitalized)
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundStyle(.black)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color(type.capitalized))
+                .clipShape(Capsule())
+                .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 2)
         }
+    }
+    
+    var body: some View {
+        
+        switch widgetSize {
+        case .systemMedium:
+            HStack{
+                pokemonImage
+             
+                Spacer()
+                
+                
+                VStack(alignment: .leading){
+                    
+                    Text(entry.name.capitalized)
+                        .font(.title)
+                        .padding(.vertical, 1)
+                    
+                    HStack(spacing: 10) {
+                        typeView
+                    }
+                }.layoutPriority(1)
+                
+                Spacer()
+            }
+            
+        case .systemLarge:
+            
+            ZStack{
+                pokemonImage
+                
+                
+                VStack(alignment: .leading){
+                    Text(entry.name.capitalized)
+                        .font(.largeTitle)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                    Spacer()
+                    
+                    HStack{
+                        typeView
+                    }
+                    
+                }
+            }
+            
+        default:
+            pokemonImage
+        }
+        
     }
 }
 
@@ -66,19 +132,34 @@ struct DexWidget: Widget {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             if #available(iOS 17.0, *) {
                 DexWidgetEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
+                    .foregroundStyle(.black)
+                    .containerBackground(Color(entry.types[0].capitalized), for: .widget)
             } else {
                 DexWidgetEntryView(entry: entry)
                     .padding()
                     .background()
             }
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("Pokemon")
+        .description("See a random Pokemon.")
     }
 }
 
 #Preview(as: .systemSmall) {
+    DexWidget()
+} timeline: {
+    SimpleEntry.placeholder
+    SimpleEntry.placeholder2
+}
+
+#Preview(as: .systemMedium) {
+    DexWidget()
+} timeline: {
+    SimpleEntry.placeholder
+    SimpleEntry.placeholder2
+}
+
+#Preview(as: .systemLarge) {
     DexWidget()
 } timeline: {
     SimpleEntry.placeholder
