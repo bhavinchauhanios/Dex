@@ -56,21 +56,21 @@ struct PersistenceController {
 
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "Dex")
-        
+
+        guard let appGroupURL = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: "group.com.bhavininc.DexGroup") else {
+            fatalError("Shared container not found. Check App Group setup.")
+        }
+
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         } else {
-            // DEV ONLY: remove store if migration fails
-            let storeURL = NSPersistentContainer
-                .defaultDirectoryURL()
-                .appendingPathComponent("Dex.sqlite")
-            try? FileManager.default.removeItem(at: storeURL)
+            let storeURL = appGroupURL.appendingPathComponent("Dex.sqlite")
+            let storeDescription = NSPersistentStoreDescription(url: storeURL)
+            storeDescription.shouldMigrateStoreAutomatically = true
+            storeDescription.shouldInferMappingModelAutomatically = true
+            container.persistentStoreDescriptions = [storeDescription]
         }
-
-        // Enable lightweight migration
-        let description = container.persistentStoreDescriptions.first
-        description?.shouldMigrateStoreAutomatically = true
-        description?.shouldInferMappingModelAutomatically = true
 
         container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
