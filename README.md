@@ -26,9 +26,7 @@ A hands-on project to explore **SwiftUI, SwiftData, Core Data, and Git** while i
 <img width="500" height="1084" alt="Simulator Screenshot - iPhone 16 - 2025-08-19 at 11 52 19" src="https://github.com/user-attachments/assets/195b74ae-cfd2-49f6-be25-56f7f7d500d9" />
 <img width="500" height="1084" alt="Simulator Screenshot - iPhone 16 - 2025-08-19 at 11 52 07" src="https://github.com/user-attachments/assets/d053c9b0-d895-462f-90a4-8af9f1046a57" />
 
-
-Uploading Simulator Screen Recording - iPhone 16 - 2025-08-19 at 11.57.13.mp4…
-
+https://github.com/user-attachments/assets/c1d2067a-b2c0-4dcb-be03-275f01e3defc
 
 ## ▶️ Run It  
 ```bash
